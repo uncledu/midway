@@ -35,15 +35,15 @@ export abstract class ServiceFactory<T> {
   public async createInstance(config, clientName?) {
     // options.default will be merge in to options.clients[id]
     config = Object.assign({}, this.options['default'], config);
-    const client = await this.createClient(config);
-    if (clientName) {
+    const client = await this.createClient(config, clientName);
+    if (client && clientName) {
       this.clients.set(clientName, client);
     }
     return client;
   }
 
   public abstract getName();
-  protected abstract createClient(config);
+  protected abstract createClient(config, name);
   protected async destroyClient(client: T): Promise<void> {}
 
   public async stop() {
