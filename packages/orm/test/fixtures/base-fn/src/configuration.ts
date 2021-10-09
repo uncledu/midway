@@ -1,23 +1,15 @@
-import { App, Configuration, Inject } from '@midwayjs/decorator';
+import { App, Configuration, Inject, Provide } from '@midwayjs/decorator';
 import * as orm from '../../../../src';
 import { join } from 'path';
 import { getRepository, getCustomRepository, InjectEntityModel, useEntityModel } from '../../../../src';
 import { User } from './model/user';
-import { EntityRepository, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as assert from 'assert';
 import { IMidwayApplication } from '@midwayjs/core';
+import { UserRepository } from './model/UserRepo';
 
-@EntityRepository(User)
-class UserRepository extends Repository<User> {
-  findMyPost() {
-    return this.findOne();
-  }
 
-  createSave(u: any) {
-    return this.manager.save(u);
-  }
-}
-
+@Provide()
 @Configuration({
   imports: [
     orm
@@ -57,7 +49,7 @@ export class ContainerConfiguration {
     assert.deepStrictEqual(users, newUsers);
 
     const newUser = this.getCustomRepo(UserRepository);
-    const ttu = (newUser as any).create(); 
+    const ttu = newUser.create(); 
     ttu.name = 'ttt' + Date.now();
     await (newUser as any).createSave(ttu);
     const ret = await newUser.find({ name: ttu.name});
